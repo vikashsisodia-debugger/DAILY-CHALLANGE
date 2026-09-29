@@ -1,0 +1,37 @@
+class Solution {
+    static Boolean[][][] dp;
+    static int offset;
+    public boolean hasValidPath(char[][] arr) {
+        int totalLen = (arr.length - 1) + (arr[0].length - 1) + 1;
+        if(totalLen % 2 != 0) {return false;}
+        int m = arr.length,n = arr[0].length;
+        dp = new Boolean[m][n][totalLen * 2 + 1];
+        offset = totalLen;
+        boolean ans = solve(arr, 0, 0,0);
+        return ans;
+    }
+    static boolean solve(char arr[][],int row,int col,int paranthesis) {
+        if(row >= arr.length || col >= arr[row].length) {return false;}
+        if(row == arr.length - 1 && col == arr[row].length - 1) {
+            if(arr[row][col] == '(') {paranthesis++;}
+            else paranthesis--;
+            if(paranthesis == 0) {
+                return true;
+            }else{
+                return false;
+            }
+        }
+        if(arr[row][col] == ')' && paranthesis - 1 < 0) {return false;}
+        if(dp[row][col][paranthesis + offset] != null) {
+            return dp[row][col][paranthesis + offset];
+        }
+        if(arr[row][col] == '(') {
+            return dp[row][col][paranthesis + offset] = 
+            solve(arr, row, col + 1, paranthesis + 1) || solve(arr, row + 1, col, paranthesis + 1);
+        }else if(arr[row][col] == ')' && paranthesis - 1 >= 0) {
+            return dp[row][col][paranthesis + offset] = 
+            solve(arr, row, col + 1, paranthesis - 1) || solve(arr, row + 1, col, paranthesis - 1);
+        }
+        return false;
+    }
+}
