@@ -1,0 +1,23 @@
+class Solution {
+    static void take(String str,int open,int close,ArrayList<String> list) {
+        if(open == 0 && close == 0) {
+            list.add(str);
+            return;
+        }
+        if(open > 0 && open < close) {
+            take(str + "(",open - 1,close,list);
+            take(str + ")",open,close - 1,list);
+        }
+        if(open == 0 && close > 0) {
+            take(str + ")",open,close - 1,list);
+        }
+        if(open == close) {
+            take(str + "(",open - 1,close,list);
+        }
+    }
+    public List<String> generateParenthesis(int n) {
+        ArrayList<String> list = new ArrayList<>();
+        take("",n,n,list);
+        return list;
+    }
+}
