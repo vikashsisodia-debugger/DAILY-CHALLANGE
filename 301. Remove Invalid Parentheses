@@ -1,0 +1,37 @@
+class Solution {
+    int n;
+    HashMap<Integer,HashSet<String>> map;
+    int minRemoval;
+    public List<String> removeInvalidParentheses(String str) {
+        map = new HashMap<>();
+        n = str.length();
+        minRemoval = Integer.MAX_VALUE;
+        solve(str, 0,"", 0, 0);
+        HashSet<String> set = map.get(minRemoval);
+        List<String> answer = new ArrayList<>();
+        for(String s : set) {answer.add(s);}
+        return answer;
+    }
+    void solve(String str,int idx,String ans,int open,int closed) {
+        if(idx == n) {
+            if(open == closed) {
+                int removed = n - ans.length();
+                minRemoval = Math.min(minRemoval, removed);
+                map.putIfAbsent(removed,new HashSet<>());
+                map.get(removed).add(ans);
+            }
+            return;
+        }
+        if(str.charAt(idx) == '(') {
+            solve(str, idx + 1, ans + "(", open + 1, closed);
+            solve(str, idx + 1, ans, open, closed);
+        }else if(str.charAt(idx) == ')') {
+            if(open > closed) {
+                solve(str, idx + 1, ans + ")", open, closed + 1);
+            }
+            solve(str, idx + 1, ans, open, closed);
+        }else{
+            solve(str, idx + 1, ans + str.charAt(idx), open, closed);
+        }
+    }
+}
