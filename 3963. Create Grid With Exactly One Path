@@ -1,0 +1,35 @@
+class Solution {
+    boolean foundOnePath = false;
+    public String[] createGrid(int m, int n) {
+        char arr[][] = new char[m][n];
+        for(char row[] : arr) {
+            Arrays.fill(row,'.');
+        }
+        dfs(arr,0,0);
+        for(int i = 0;i < m;i++) {
+            for(int j = 0;j < n;j++) {
+                if(arr[i][j] == 'P') {
+                    arr[i][j] = '.';
+                }else{
+                    arr[i][j] = '#';
+                }
+            }
+        }
+        String ans[] = new String[m];
+        for(int i = 0;i < m;i++) {
+            ans[i] = new String(arr[i]);
+        }
+        return ans;
+    }
+    void dfs(char arr[][],int row,int col) {
+        if(foundOnePath) {return;}
+        if(row >= arr.length || col >= arr[row].length) {return;}
+        arr[row][col] = 'P';
+        if(row == arr.length - 1 && col == arr[row].length - 1) {
+            foundOnePath = true;
+            return;
+        }
+        dfs(arr,row,col + 1);
+        dfs(arr,row + 1,col);
+    }
+}
