@@ -1,0 +1,35 @@
+class Solution {
+    public int[] countServers(int n, int[][] logs, int x, int[] query) {
+        int min = query[0];
+        int max = query[0];
+        for(int num : query) {min = Math.min(min,num);max = Math.max(max, num);}
+        HashMap<Integer,Integer> request = new HashMap<>();
+        HashSet<Integer> queries = new HashSet<>();
+        for(int log[] : logs) {
+            int t = log[1];
+            request.put(t,request.getOrDefault(t, 0) + 1);
+        }
+        for(int q : query) {queries.add(q);}
+        int window[] = new int[max + 1];
+        int req[] = new int[max + 1];
+        int ans[] = new int[query.length];
+        HashMap<Integer,Integer> answers = new HashMap<>();
+        for(int i = Math.max(0,min - x);i <= max;i++) {
+            if(request.containsKey(i)) {
+                window[i] += request.get(i);
+                req[i] = request.get(i);
+            }
+            window[i] += window[i - 1];
+            if(i - x - 1 >= 0) {window[i] -= req[i - x - 1];}
+            if(queries.contains(i)) {
+                int answer = n - window[i];
+                answers.put(i,answer);
+            }
+        }
+        for(int i = 0;i < query.length;i++) {
+            int q = query[i];
+            ans[i] = answers.get(q);
+        }
+        return ans;
+    }
+}
