@@ -1,0 +1,74 @@
+class Solution {
+    long powerX[];
+    long powerY[];
+    long prefixX[];
+    long prefixY[];
+    long baseX = 100009L;
+    long baseY = 100019L;
+    long modX = 1_000_000_007L;
+    long modY = 1_000_000_009L;
+    void buildHash(int arr[]) {
+        int n = arr.length;
+        powerX = new long[n + 1];
+        powerY = new long[n + 1];
+        prefixX = new long[n];
+        prefixY = new long[n];
+        powerX[0] = 1;
+        powerY[0] = 1;
+        for(int i = 1;i <= n;i++) {
+            powerX[i] = (powerX[i - 1] * baseX) % modX;
+            powerY[i] = (powerY[i - 1] * baseY) % modY;
+        }
+        for(int i = 0;i < n;i++) {
+            int value = arr[i];
+            if(i == 0) {
+                prefixX[i] = value;
+                prefixY[i] = value;
+            }else{
+                prefixX[i] = (prefixX[i - 1] * baseX + value) % modX;
+                prefixY[i] = (prefixY[i - 1] * baseY + value) % modY;
+            }
+        }
+    }
+    long getHashX(int left,int right) {
+        if(left == 0) {return prefixX[right];}
+        int len = right - left + 1;
+        long hash = (prefixX[right] - prefixX[left - 1] * powerX[len]) % modX;
+        return (hash + modX) % modX;
+    }
+    long getHashY(int left,int right) {
+        if(left == 0) {return prefixY[right];}
+        int len = right - left + 1;
+        long hash = (prefixY[right] - prefixY[left - 1] * powerY[len]) % modY;
+        return (hash + modY) % modY;
+    }
+    public int smallestUniqueSubarray(int[] arr) {
+        buildHash(arr);
+        int n = arr.length;
+        int lower = 1,upper = arr.length;
+        int ans = upper;
+        while(lower <= upper) {
+            int mid = lower + (upper - lower) / 2;
+            if(checkFunction(n, mid)) {
+                ans = mid;
+                upper = mid - 1;
+            }else{
+                lower = mid + 1;
+            }
+        }
+        return ans;
+    }
+    boolean checkFunction(int n,int k) {
+        HashMap<Long,Integer> map = new HashMap<>();
+        for(int i = 0;i <= n - k;i++) {
+            long h1 = getHashX(i, i + k - 1);
+            long h2 = getHashY(i, i + k - 1);
+            long hash = (h1 << 32) | (h2 & 0xffffffffL);
+            map.put(hash,map.getOrDefault(hash,0) + 1);
+        }
+        for(long keys : map.keySet()) {
+            if(map.get(keys) == 1) {return true;}
+        }
+        return false;
+    }
+}
